@@ -1,0 +1,16 @@
+#board {
+    transform: rotate(45deg);
+    padding-left: 300px;
+    margin-top: -130px;
+}
+
+.notation-322f9,
+.square-55d63>.piece-417db,
+.spare-pieces-7492f>.piece-417db {
+    transform: rotate(-45deg);
+}
+
+.textbox {
+    margin-left: 800px;
+    margin-top: -200px;
+}
