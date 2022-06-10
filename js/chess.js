@@ -41,7 +41,7 @@ var Chess = function(fen) {
     var SYMBOLS = 'pnbrqkPNBRQK'
 
     var DEFAULT_POSITION =
-        '1qrn4/kb1pp3/rbpp4/npp3P1/1p3PPN/4PP1R/3PPBBQ/4NRK1 w KQkq - 0 1'
+        '1qrn4/kb1pp3/rbpp4/npp3P1/1p3PPN/4PP1R/3PPBBQ/4NRK1 w - - 0 1'
         // 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
     var POSSIBLE_RESULTS = ['1-0', '0-1', '1/2-1/2', '*']
@@ -131,6 +131,15 @@ var Chess = function(fen) {
     var RANK_6 = 2
     var RANK_7 = 1
     var RANK_8 = 0
+
+    var FILE_A = 0
+    var FILE_B = 1
+    var FILE_C = 2
+    var FILE_D = 3
+    var FILE_E = 4
+    var FILE_F = 5
+    var FILE_G = 6
+    var FILE_H = 7
 
     // prettier-ignore
     var SQUARES = {
@@ -576,11 +585,20 @@ var Chess = function(fen) {
     }
 
     function generate_moves(options) {
+        function isPromotingSquare(to) {
+            return (rank(to) === RANK_8 && file(to) === FILE_A) ||
+                (rank(to) === RANK_7 && file(to) === FILE_A) ||
+                (rank(to) === RANK_8 && file(to) === FILE_B) ||
+                (rank(to) === RANK_1 && file(to) === FILE_G) ||
+                (rank(to) === RANK_2 && file(to) === FILE_H) ||
+                (rank(to) === RANK_1 && file(to) === FILE_H)
+        }
+
         function add_move(board, moves, from, to, flags) {
             /* if pawn promotion */
             if (
                 board[from].type === PAWN &&
-                (rank(to) === RANK_8 || rank(to) === RANK_1)
+                isPromotingSquare(to)
             ) {
                 var pieces = [QUEEN, ROOK, BISHOP, KNIGHT]
                 for (var i = 0, len = pieces.length; i < len; i++) {
@@ -649,9 +667,10 @@ var Chess = function(fen) {
 
                     if (board[square] != null && board[square].color === them) {
                         add_move(board, moves, i, square, BITS.CAPTURE)
-                    } else if (square === ep_square) {
-                        add_move(board, moves, i, ep_square, BITS.EP_CAPTURE)
                     }
+                    // else if (square === ep_square) {
+                    //     add_move(board, moves, i, ep_square, BITS.EP_CAPTURE)
+                    // }
                 }
             } else {
                 for (var j = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
@@ -1022,15 +1041,15 @@ var Chess = function(fen) {
         }
 
         /* if big pawn move, update the en passant square */
-        if (move.flags & BITS.BIG_PAWN) {
-            if (turn === 'b') {
-                ep_square = move.to - 16
-            } else {
-                ep_square = move.to + 16
-            }
-        } else {
-            ep_square = EMPTY
-        }
+        // if (move.flags & BITS.BIG_PAWN) {
+        //     if (turn === 'b') {
+        //         ep_square = move.to - 16
+        //     } else {
+        //         ep_square = move.to + 16
+        //     }
+        // } else {
+        //     ep_square = EMPTY
+        // }
 
         /* reset the 50 move counter if a pawn is moved or a piece is captured */
         if (move.piece === PAWN) {
